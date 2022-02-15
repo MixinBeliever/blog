@@ -1,4 +1,4 @@
-# 空无个人博客
+# 刘攀个人博客
 
 ## 如何开始
 ```
@@ -16,4 +16,4 @@ npm start
 npm run pd
 ```
 访问地址：
-[https://kongwutw.github.io/blog/](https://kongwutw.github.io/blog/)
+[https://mixinbeliever.github.io/blog/](https://mixinbeliever.github.io/blog/)
