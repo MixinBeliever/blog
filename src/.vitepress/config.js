@@ -11,7 +11,7 @@ module.exports = {
   description: '让全栈编程更容易~',
   head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.png' }]],
   themeConfig: {
-    repo: 'liupan/blog',
+    repo: 'MixinBeliever/blog',
     logo: '/logo.png',
     docsDir: 'docs',
     docsBranch: 'main',
