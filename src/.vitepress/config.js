@@ -17,7 +17,6 @@ module.exports = {
     docsBranch: 'main',
     nav: [
       { text: '技术文章', link: '/tech/' },
-      { text: '管理笔记', link: '/manage/' },
       { text: '关于小编', link: '/about/' },
       {
         text: '常用网址',
@@ -64,7 +63,7 @@ module.exports = {
           text: '技术调研',
           children: [
             {
-              text: '22年大前端热点技术',
+              text: 'Vue3 指南+踩坑',
               link: '/tech/'
             },
             {
@@ -107,26 +106,6 @@ module.exports = {
           ]
         },
       ],
-      '/manage': [
-        {
-          text: '理论指导',
-          children: [
-            {
-              text: '管理者管什么？',
-              link: '/manage/index'
-            },
-          ]
-        },
-        {
-          text: '实践总结',
-          children: [
-            {
-              text: '近期管理的认知迭代',
-              link: '/manage/sum'
-            },
-          ]
-        },
-      ]
     }
   }
 }
