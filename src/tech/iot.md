@@ -1,106 +1,646 @@
-# 物联网常见协议
-物联网是人工智能落地的一个非常好的应用场景。随着人工智能的迅速发展，物联网这个同样在很多年前就提出的理论和技术，也会迎来新的春天。
+# TypeScript学习整理
 
-端到端的沟通，一直是物联网业务的难点。使用的物联网通讯协议不同，使得这些设备之间的沟通存在巨大的鸿沟。
+## 0、TypeScript简介
 
-通讯协议又称通讯规程，是通信双方对数据传送控制的一种约定，双方必须共同准守。约定的内容包括：数据格式、同步方式、传送速度、传送速度、传送步骤、检纠错方式、控制字符定义等。
-
-双方实体需要准守通信协议中既定的规则，才能将有意义的信息传递给对方。
-
-市面上有很多物联网应用层协议，COAP、HTTP、MQTT 是最常见的三种。HTTP 和 MQTT 均使用 TCP 作为传输层协议，而 COAP 则是基于 UDP 传输协议。同时，传输层的 UDP 和 TCP 协议又都是依赖网络层的 IP 技术。
-
-## TCP/IP 网络模型
-TCP/IP 模型是互联网的基础，它是一系列网络协议的总称。这些协议可以划分为四层：
-- 链路层：负责封装和解封装 IP 报文，发送和接收 ARP 和 RARP 报文等。
-- 网络层：负责路由以及把分组报文发送给目标网络或主机。
-- 传输层：负责对报文进行分组和重组，并以 TCP 或 UDP 协议格式封装报文。
-- 应用层：负责向用户提供应用程序，比如 HTTP、COAP、Telnet、MQTT、DNS 等。
-
-在网络体系结构中，网络通讯的建立必须是在通讯双方在对等层进行，不能交错。
-
-在整个数据传输过程中，数据在发送端时经过各层都要附加上相应层的协议头和协议尾（仅数据链路层需要封装协议尾）部分，也就是要对数据进行协议封装，以标识对应层所用的通讯协议。
-
-TCP（Transmission Control Protocol，传输控制协议），是是一种面向连接的、可靠的、基于字节流得到传输层通信协议，由 IETF 的 RFC 793 定义。
-
-为了防止出现失效的连接请求报文被服务端接收的情况，从而产生错误，建立一个 TCP 连接的需要三次握手的过程：
-- 第一次握手：客户端发送 SYN（SEQ=x）报文给服务器，进入 SYN_SEND 状态
-- 第二次握手：服务端接收到 SYN 报文，回应一个 SYN（SEQ=y）+ ACK（ACK=x+1）报文，并进入 SYN_RECV 状态。
-- 第三次握手：客户端收到服务端的 SYN 报文，回应一个 ACK（ACK=y+1）报文，进入连接（Established）状态。
-
-建立一个连接需要三次握手，而终止一个连接需要进经过四次挥手，这是由于 TCP 的半关闭造成的。
-
-## HTTP 协议
-HTTP 协议，即超文本传输协议（Hypertext Transfer Protocol），是一种详细规定了浏览器和万维网服务器之间互相通信的规则，通过因特网传送万维网文档得到数据传送协议。
-
-目前 HTTP 协议作为 WEB 的标准协议已被广泛使用，它在一些物联网场景中同样可以使用，例如手机、PC等终端设备。但是作为适应浏览器场景的 HTTP 协议，并不适用于物联网的其他设备。
-
-适用范围：开放物联网中的资源，实现服务被其他应用所调用。
-
-优势：
-- 简单的工作模式，请求 / 响应。
-- 完整的方法定义。
-- 合理的状态码设计。
-- 友好的媒体类型支持，如文本、图片、视频等。
-
-缺点：
-- 单向传输，可以通过客户端轮询实现类似推送效果或者HTTP2.0
-- 安全性不高，HTTP是明文协议，可以使用 HTTPS 传输。
-- HTTP 是文本协议，冗长的协议头部，对于运算、存储、带宽资源受限的设备来说开销大。
-
-## CoAP 协议
-CoAP（Constrained Application Protocol）即受限的应用协议。CoAP 是为了让低功耗受限设备可以接入互联网，由 IETF 组织制定的，它借鉴了 HTTP 大量成功经验，同样使用请求 / 响应工作模式。
-
-适用范围：适用于互联网环境下一对一 M2M 通讯。
-
-优势：
-- 采用和 HTTP 相似语义的请求和响应码，使用二进制报文，报文大小较小。
-- 传输层基于 UDP 协议，比 TCP 数据包小，并不需要建立连接带来握手的开销。
-- 资源发送支持，通过观察者模式实现类似发布 / 订阅效果。
-
-缺点：
-- 基于 UDP 的不可靠传输，但通过四种报文类型的组合及重传机制提高了传输的可靠性。
-- 基于 UDP 的无连接传输，不利于不同网络间消息的回传。
-
-## MQTT 协议
-MQTT（Message Queuing Telemetry Transport）即消息队列遥测传输。
-
-MQTT 协议最初是在 1999 年由 IBM 公司开发的，用于将石油管道上的传感器与卫星相连接。2014 年正式成为 OASIS 开放标准。
-
-MQTT 使用类似 MQ 常用的发布 / 订阅模式，起到应用程序解耦、异步消息、削峰填谷的作用。很多 MQ 中间件也支持 MQTT 协议，比如 ActiveMQ、RabbitMQ、Kafka 等。
-
-适用范围：在低带宽、不可靠的网络下提供基于云平台的远程设备的数据传输和监控。
-
-优势：
-- 使用发布 / 订阅模式，提供一对多的消息发布，使消息发送者和接受者在时间和时空上解耦。
-- 二进制协议，网络传输开销非常小（固定头部是2字节）。
-- 灵活的 Topic 订阅、QoS 等特性。
-
-缺点：
-- 集中化部署，服务端压力大，需要考虑流程控制及高可用。
-- 对于请求 / 响应模式的支持需要在应用层根据消息 ID 做发布主题和订阅主题之间的关联。
+1. TypeScript是JavaScript的超集。
+2. 它对JS进行了扩展，向JS中引入了类型的概念，并添加了许多新的特性。
+3. TS代码需要通过编译器编译为JS，然后再交由JS解析器执行。
+4. TS完全兼容JS，换言之，任何的JS代码都可以直接当成JS使用。
+5. 相较于JS而言，TS拥有了静态类型，更加严格的语法，更强大的功能；TS可以在代码执行前就完成代码的检查，减小了运行时异常的出现的几率；TS代码可以编译为任意版本的JS代码，可有效解决不同JS运行环境的兼容问题；同样的功能，TS的代码量要大于JS，但由于TS的代码结构更加清晰，变量类型更加明确，在后期代码的维护中TS却远远胜于JS。
 
 
-## MQTT-SN协议
-MQTT-SN（MQTT for Sensor Network）协议是MQTT协议的传感器版本。MQTT协议虽然是轻量的应用层协议，但是MQTT协议是运行于TCP协议栈之上的，TCP协议对于某些计算能力和电量非常有限的设备来说，比如传感器，就不太适用了。
 
-MQTT-SN运行在UDP协议上，同时保留了MQTT协议的大部分信令和特性，如订阅和发布等。MQTT-SN协议引入了MQTT-SN网关这一角色，网关负责把MQTT-SN协议转换为MQTT协议，并和远端的MQTT Broker进行通信。MQTT-SN协议支持网关的自动发现。
+## 1、TypeScript 开发环境搭建
 
-## LoRaWAN协议
-LoRaWAN协议是由LoRa联盟提出并推动的一种低功率广域网协议，它和我们之前介绍的几种协议有所不同。
+1. 下载Node.js
+   - 64位：https://nodejs.org/dist/v14.15.1/node-v14.15.1-x64.msi
+   - 32位：https://nodejs.org/dist/v14.15.1/node-v14.15.1-x86.msi
+   
+2. 安装Node.js
 
-MQTT协议、CoAP协议都是运行在应用层，底层使用TCP协议或者UDP协议进行数据传输，整个协议栈运行在IP网络上。而LoRaWAN协议则是物理层/数据链路层协议，它解决的是设备如何接入互联网的问题，并不运行在IP网络上。
+3. 使用npm全局安装typescript
+   - 进入命令行
+   - 输入：npm i -g typescript
+   
+4. 创建一个ts文件
 
-LoRa（Long Range）是一种无线通信技术，它具有使用距离远、功耗低的特点。 在上面的场景下，用户就可以使用LoRaWAN技术进行组网，在工程设备上安装支持LoRa的模块。
+5. 使用tsc对ts文件进行编译
+   - 进入命令行
+   
+   - 进入ts文件所在目录
+   
+   - 执行命令：tsc xxx.ts
+   
+     
 
-通过LoRa的中继设备将数据发往位于隧道外部的、有互联网接入的LoRa网关，LoRa网关再将数据封装成可以在IP网络中通过TCP协议或者UDP协议传输的数据协议包（比如MQTT协议），然后发往云端的数据中心。
+## 2、基本类型
 
-## NB-IoT协议
-NB-IoT（Narrow Band Internet of Things）协议和LoRaWAN协议一样，是将设备接入互联网的物理层/数据链路层的协议。
+- 类型声明
 
-与LoRA不同的是，NB-IoT协议构建和运行在蜂窝网络上，消耗的带宽较低，可以直接部署到现有的GSM网络或者LTE网络。
+  - 类型声明是TS非常重要的一个特点
 
-设备安装支持NB-IoT的芯片和相应的物联网卡，然后连接到NB-IoT基站就可以接入互联网。而且NB-IoT协议不像LoRaWAN协议那样需要网关进行协议转换，接入的设备可以直接使用IP网络进行数据传输。
+  - 通过类型声明可以指定TS中变量（参数、形参）的类型
 
-NB-IoT协议相比传统的基站，增益提高了约20dB，可以覆盖到地下车库、管道、地下室等之前信号难以覆盖的地方。
+  - 指定类型后，当为变量赋值时，TS编译器会自动检查值是否符合类型声明，符合则赋值，否则报错
 
+  - 简而言之，类型声明给变量设置了类型，使得变量只能存储某种类型的值
 
+  - 语法：
+
+    - ```typescript
+      let 变量: 类型;
+      
+      let 变量: 类型 = 值;
+      
+      function fn(参数: 类型, 参数: 类型): 类型{
+          ...
+      }
+      ```
+
+- 自动类型判断
+
+  - TS拥有自动的类型判断机制
+  - 当对变量的声明和赋值是同时进行的，TS编译器会自动判断变量的类型
+  - 所以如果你的变量的声明和赋值时同时进行的，可以省略掉类型声明
+
+- 类型：
+
+  |  类型   |       例子        |              描述              |
+  | :-----: | :---------------: | :----------------------------: |
+  | number  |    1, -33, 2.5    |            任意数字            |
+  | string  | 'hi', "hi", `hi`  |           任意字符串           |
+  | boolean |    true、false    |       布尔值true或false        |
+  | 字面量  |      其本身       |  限制变量的值就是该字面量的值  |
+  |   any   |         *         |            任意类型            |
+  | unknown |         *         |         类型安全的any          |
+  |  void   | 空值（undefined） |     没有值（或undefined）      |
+  |  never  |      没有值       |          不能是任何值          |
+  | object  |  {name:'xxx'}  |          任意的JS对象          |
+  |  array  |      [1,2,3]      |           任意JS数组           |
+  |  tuple  |       [4,5]       | 元素，TS新增类型，固定长度数组 |
+  |  enum   |    enum{A, B}     |       枚举，TS中新增类型       |
+
+- number
+
+  - ```typescript
+    let decimal: number = 6;
+    let hex: number = 0xf00d;
+    let binary: number = 0b1010;
+    let octal: number = 0o744;
+    let big: bigint = 100n;
+    ```
+
+- boolean
+
+  - ```typescript
+    let isDone: boolean = false;
+    ```
+
+- string
+
+  - ```typescript
+    let color: string = "blue";
+    color = 'red';
+    
+    let fullName: string = `Bob Bobbington`;
+    let age: number = 37;
+    let sentence: string = `Hello, my name is ${fullName}.
+    
+    I'll be ${age + 1} years old next month.`;
+    ```
+
+- 字面量
+
+  - 也可以使用字面量去指定变量的类型，通过字面量可以确定变量的取值范围
+
+  - ```typescript
+    let color: 'red' | 'blue' | 'black';
+    let num: 1 | 2 | 3 | 4 | 5;
+    ```
+
+- any
+
+  - ```typescript
+    let d: any = 4;
+    d = 'hello';
+    d = true;
+    ```
+
+- unknown
+
+  - ```typescript
+    let notSure: unknown = 4;
+    notSure = 'hello';
+    ```
+
+- void
+
+  - ```typescript
+    let unusable: void = undefined;
+    ```
+
+- never
+
+  - ```typescript
+    function error(message: string): never {
+      throw new Error(message);
+    }
+    ```
+
+- object（没啥用）
+
+  - ```typescript
+    let obj: object = {};
+    ```
+
+- array
+
+  - ```typescript
+    let list: number[] = [1, 2, 3];
+    let list: Array<number> = [1, 2, 3];
+    ```
+
+- tuple
+
+  - ```typescript
+    let x: [string, number];
+    x = ["hello", 10]; 
+    ```
+
+- enum
+
+  - ```typescript
+    enum Color {
+      Red,
+      Green,
+      Blue,
+    }
+    let c: Color = Color.Green;
+    
+    enum Color {
+      Red = 1,
+      Green,
+      Blue,
+    }
+    let c: Color = Color.Green;
+    
+    enum Color {
+      Red = 1,
+      Green = 2,
+      Blue = 4,
+    }
+    let c: Color = Color.Green;
+    ```
+
+- 类型断言
+
+  - 有些情况下，变量的类型对于我们来说是很明确，但是TS编译器却并不清楚，此时，可以通过类型断言来告诉编译器变量的类型，断言有两种形式：
+
+    - 第一种
+
+      - ```typescript
+        let someValue: unknown = "this is a string";
+        let strLength: number = (someValue as string).length;
+        ```
+
+    - 第二种
+
+      - ```typescript
+        let someValue: unknown = "this is a string";
+        let strLength: number = (<string>someValue).length;
+        ```
+
+        
+
+## 3、编译选项
+
+- 自动编译文件
+
+  - 编译文件时，使用 -w 指令后，TS编译器会自动监视文件的变化，并在文件发生变化时对文件进行重新编译。
+
+  - 示例：
+
+    - ```powershell
+      tsc xxx.ts -w
+      ```
+
+- 自动编译整个项目
+
+  - 如果直接使用tsc指令，则可以自动将当前项目下的所有ts文件编译为js文件。
+
+  - 但是能直接使用tsc命令的前提时，要先在项目根目录下创建一个ts的配置文件 tsconfig.json
+
+  - tsconfig.json是一个JSON文件，添加配置文件后，只需只需 tsc 命令即可完成对整个项目的编译
+
+  - 配置选项：
+
+    - include
+
+      - 定义希望被编译文件所在的目录
+
+      - 默认值：["\*\*/\*"]
+
+      - 示例：
+
+        - ```json
+          "include":["src/**/*", "tests/**/*"]
+          ```
+
+        - 上述示例中，所有src目录和tests目录下的文件都会被编译
+
+    - exclude
+
+      - 定义需要排除在外的目录
+
+      - 默认值：["node_modules", "bower_components", "jspm_packages"]
+
+      - 示例：
+
+        - ```json
+          "exclude": ["./src/hello/**/*"]
+          ```
+
+        - 上述示例中，src下hello目录下的文件都不会被编译
+
+    - extends
+
+      - 定义被继承的配置文件
+
+      - 示例：
+
+        - ```json
+          "extends": "./configs/base"
+          ```
+
+        - 上述示例中，当前配置文件中会自动包含config目录下base.json中的所有配置信息
+
+    - files
+
+      - 指定被编译文件的列表，只有需要编译的文件少时才会用到
+
+      - 示例：
+
+        - ```json
+          "files": [
+              "core.ts",
+              "sys.ts",
+              "types.ts",
+              "scanner.ts",
+              "parser.ts",
+              "utilities.ts",
+              "binder.ts",
+              "checker.ts",
+              "tsc.ts"
+            ]
+          ```
+
+        - 列表中的文件都会被TS编译器所编译
+
+      - compilerOptions
+
+        - 编译选项是配置文件中非常重要也比较复杂的配置选项
+
+        - 在compilerOptions中包含多个子选项，用来完成对编译的配置
+
+          - 项目选项
+
+            - target
+
+              - 设置ts代码编译的目标版本
+
+              - 可选值：
+
+                - ES3（默认）、ES5、ES6/ES2015、ES7/ES2016、ES2017、ES2018、ES2019、ES2020、ESNext
+
+              - 示例：
+
+                - ```json
+                  "compilerOptions": {
+                      "target": "ES6"
+                  }
+                  ```
+
+                - 如上设置，我们所编写的ts代码将会被编译为ES6版本的js代码
+
+            - lib
+
+              - 指定代码运行时所包含的库（宿主环境）
+
+              - 可选值：
+
+                - ES5、ES6/ES2015、ES7/ES2016、ES2017、ES2018、ES2019、ES2020、ESNext、DOM、WebWorker、ScriptHost ......
+
+              - 示例：
+
+                - ```json
+                  "compilerOptions": {
+                      "target": "ES6",
+                      "lib": ["ES6", "DOM"],
+                      "outDir": "dist",
+                      "outFile": "dist/aa.js"
+                  }
+                  ```
+
+            - module
+
+              - 设置编译后代码使用的模块化系统
+
+              - 可选值：
+
+                - CommonJS、UMD、AMD、System、ES2020、ESNext、None
+
+              - 示例：
+
+                - ```typescript
+                  "compilerOptions": {
+                      "module": "CommonJS"
+                  }
+                  ```
+
+            - outDir
+
+              - 编译后文件的所在目录
+
+              - 默认情况下，编译后的js文件会和ts文件位于相同的目录，设置outDir后可以改变编译后文件的位置
+
+              - 示例：
+
+                - ```json
+                  "compilerOptions": {
+                      "outDir": "dist"
+                  }
+                  ```
+
+                - 设置后编译后的js文件将会生成到dist目录
+
+            - outFile
+
+              - 将所有的文件编译为一个js文件
+
+              - 默认会将所有的编写在全局作用域中的代码合并为一个js文件，如果module制定了None、System或AMD则会将模块一起合并到文件之中
+
+              - 示例：
+
+                - ```json
+                  "compilerOptions": {
+                      "outFile": "dist/app.js"
+                  }
+                  ```
+
+            - rootDir
+
+              - 指定代码的根目录，默认情况下编译后文件的目录结构会以最长的公共目录为根目录，通过rootDir可以手动指定根目录
+
+              - 示例：
+
+                - ```json
+                  "compilerOptions": {
+                      "rootDir": "./src"
+                  }
+                  ```
+
+            - allowJs
+
+              - 是否对js文件编译
+
+            - checkJs
+
+              - 是否对js文件进行检查
+
+              - 示例：
+
+                - ```json
+                  "compilerOptions": {
+                      "allowJs": true,
+                      "checkJs": true
+                  }
+                  ```
+
+            - removeComments
+
+              - 是否删除注释
+              - 默认值：false
+
+            - noEmit
+
+              - 不对代码进行编译
+              - 默认值：false
+
+            - sourceMap
+
+              - 是否生成sourceMap
+              - 默认值：false
+
+              
+
+          - 严格检查
+
+            - strict
+              - 启用所有的严格检查，默认值为true，设置后相当于开启了所有的严格检查
+            - alwaysStrict
+              - 总是以严格模式对代码进行编译
+            - noImplicitAny
+              - 禁止隐式的any类型
+            - noImplicitThis
+              - 禁止类型不明确的this
+            - strictBindCallApply
+              - 严格检查bind、call和apply的参数列表
+            - strictFunctionTypes
+              - 严格检查函数的类型
+            - strictNullChecks
+              - 严格的空值检查
+            - strictPropertyInitialization
+              - 严格检查属性是否初始化
+
+          - 额外检查
+
+            - noFallthroughCasesInSwitch
+              - 检查switch语句包含正确的break
+            - noImplicitReturns
+              - 检查函数没有隐式的返回值
+            - noUnusedLocals
+              - 检查未使用的局部变量
+            - noUnusedParameters
+              - 检查未使用的参数
+
+          - 高级
+
+            - allowUnreachableCode
+              - 检查不可达代码
+              - 可选值：
+                - true，忽略不可达代码
+                - false，不可达代码将引起错误
+            - noEmitOnError
+              - 有错误的情况下不进行编译
+              - 默认值：false
+
+## 4、webpack
+
+- 通常情况下，实际开发中我们都需要使用构建工具对代码进行打包，TS同样也可以结合构建工具一起使用，下边以webpack为例介绍一下如何结合构建工具使用TS。
+
+- 步骤：
+
+  1. 初始化项目
+
+     - 进入项目根目录，执行命令 ``` npm init -y```
+       - 主要作用：创建package.json文件
+
+  2. 下载构建工具
+
+     - ```npm i -D webpack webpack-cli webpack-dev-server typescript ts-loader clean-webpack-plugin```
+       - 共安装了7个包
+         - webpack
+           - 构建工具webpack
+         - webpack-cli
+           - webpack的命令行工具
+         - webpack-dev-server
+           - webpack的开发服务器
+         - typescript
+           - ts编译器
+         - ts-loader
+           - ts加载器，用于在webpack中编译ts文件
+         - html-webpack-plugin
+           - webpack中html插件，用来自动创建html文件
+         - clean-webpack-plugin
+           - webpack中的清除插件，每次构建都会先清除目录
+
+  3. 根目录下创建webpack的配置文件webpack.config.js
+
+     - ```javascript
+       const path = require("path");
+       const HtmlWebpackPlugin = require("html-webpack-plugin");
+       const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+       
+       module.exports = {
+           optimization:{
+               minimize: false // 关闭代码压缩，可选
+           },
+       
+           entry: "./src/index.ts",
+           
+           devtool: "inline-source-map",
+           
+           devServer: {
+               contentBase: './dist'
+           },
+       
+           output: {
+               path: path.resolve(__dirname, "dist"),
+               filename: "bundle.js",
+               environment: {
+                   arrowFunction: false // 关闭webpack的箭头函数，可选
+               }
+           },
+       
+           resolve: {
+               extensions: [".ts", ".js"]
+           },
+           
+           module: {
+               rules: [
+                   {
+                       test: /\.ts$/,
+                       use: {
+                          loader: "ts-loader"     
+                       },
+                       exclude: /node_modules/
+                   }
+               ]
+           },
+       
+           plugins: [
+               new CleanWebpackPlugin(),
+               new HtmlWebpackPlugin({
+                   title:'TS测试'
+               }),
+           ]
+       
+       }
+       ```
+
+  4. 根目录下创建tsconfig.json，配置可以根据自己需要
+
+     - ```json
+       {
+           "compilerOptions": {
+               "target": "ES2015",
+               "module": "ES2015",
+               "strict": true
+           }
+       }
+       ```
+
+  5. 修改package.json添加如下配置
+
+     - ```json
+       {
+         ...略...
+         "scripts": {
+           "test": "echo \"Error: no test specified\" && exit 1",
+           "build": "webpack",
+           "start": "webpack serve --open chrome.exe"
+         },
+         ...略...
+       }
+       ```
+
+  6. 在src下创建ts文件，并在并命令行执行```npm run build```对代码进行编译，或者执行```npm start```来启动开发服务器
+
+     
+
+## 5、Babel
+
+- 经过一系列的配置，使得TS和webpack已经结合到了一起，除了webpack，开发中还经常需要结合babel来对代码进行转换以使其可以兼容到更多的浏览器，在上述步骤的基础上，通过以下步骤再将babel引入到项目中。
+
+  1. 安装依赖包：
+     - ```npm i -D @babel/core @babel/preset-env babel-loader core-js```
+     - 共安装了4个包，分别是：
+       - @babel/core
+         - babel的核心工具
+       - @babel/preset-env
+         - babel的预定义环境
+       - @babel-loader
+         - babel在webpack中的加载器
+       - core-js
+         - core-js用来使老版本的浏览器支持新版ES语法
+
+  2. 修改webpack.config.js配置文件
+
+     - ```javascript
+       ...略...
+       module: {
+           rules: [
+               {
+                   test: /\.ts$/,
+                   use: [
+                       {
+                           loader: "babel-loader",
+                           options:{
+                               presets: [
+                                   [
+                                       "@babel/preset-env",
+                                       {
+                                           "targets":{
+                                               "chrome": "58",
+                                               "ie": "11"
+                                           },
+                                           "corejs":"3",
+                                           "useBuiltIns": "usage"
+                                       }
+                                   ]
+                               ]
+                           }
+                       },
+                       {
+                           loader: "ts-loader",
+       
+                       }
+                   ],
+                   exclude: /node_modules/
+               }
+           ]
+       }
+       ...略...
+       ```
+
+     - 如此一来，使用ts编译后的文件将会再次被babel处理，使得代码可以在大部分浏览器中直接使用，可以在配置选项的targets中指定要兼容的浏览器版本。
