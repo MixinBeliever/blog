@@ -78,7 +78,7 @@
   | object  |  {name:'xxx'}  |          任意的JS对象          |
   |  array  |      [1,2,3]      |           任意JS数组           |
   |  tuple  |       [4,5]       | 元素，TS新增类型，固定长度数组 |
-  |  enum   |    enum{A, B}     |       枚举，TS中新增类型       |
+  |  enum   |     |       枚举，TS中新增类型       |
 
 - number
 
