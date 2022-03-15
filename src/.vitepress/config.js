@@ -67,7 +67,7 @@ module.exports = {
               link: '/tech/'
             },
             {
-              text: '物联网常见协议',
+              text: 'TypeScript学习笔记',
               link: '/tech/iot'
             },
             {
@@ -82,28 +82,28 @@ module.exports = {
         },
         {
           text: '技术原理',
-          children: [
-            {
-              text: '深入浅出依赖注入',
-              link: '/tech/di/about'
-            },
-            {
-              text: '基于inversify打造DI业务框架',
-              link: '/tech/di/inversify'
-            },
-            {
-              text: 'Angular 的依赖注入',
-              link: '/tech/di/angular'
-            },
-            {
-              text: 'TS实现可在React中使用的DI',
-              link: '/tech/di/react'
-            },
-            {
-              text: 'React 和 Vue 中的 Hooks 对比',
-              link: '/tech/di/hooks'
-            },
-          ]
+          // children: [
+          //   {
+          //     text: '深入浅出依赖注入',
+          //     link: '/tech/di/about'
+          //   },
+          //   {
+          //     text: '基于inversify打造DI业务框架',
+          //     link: '/tech/di/inversify'
+          //   },
+          //   {
+          //     text: 'Angular 的依赖注入',
+          //     link: '/tech/di/angular'
+          //   },
+          //   {
+          //     text: 'TS实现可在React中使用的DI',
+          //     link: '/tech/di/react'
+          //   },
+          //   {
+          //     text: 'React 和 Vue 中的 Hooks 对比',
+          //     link: '/tech/di/hooks'
+          //   },
+          // ]
         },
       ],
     }
