@@ -71,7 +71,7 @@ module.exports = {
               link: '/tech/iot'
             },
             {
-              text: '深入看透低代码',
+              text: 'Npm & Yarn & Pnpm 对比',
               link: '/tech/low'
             },
             {
